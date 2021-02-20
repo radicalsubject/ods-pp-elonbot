@@ -17,7 +17,7 @@ logging.info('logger started')
 logger = logging.getLogger(__name__)
 
 import handlers
-from dialoghandlers import *
+# from dialoghandlers import *
 from token_extractor import token
 
 def main():
