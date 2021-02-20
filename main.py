@@ -3,7 +3,7 @@
 # pylint: disable=W0613, C0116
 # type: ignore[union-attr]
 # This program is dedicated to the public domain under the CC0 license.
-#logging errors to console output
+#logging errors to console output  
 import logging
 #python-telegram-bot imports
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler, CallbackQueryHandler)
