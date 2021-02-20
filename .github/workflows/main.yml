@@ -14,24 +14,6 @@ jobs:
         name: Build for ubuntu-latest
         runs-on: ubuntu-latest
         steps:
-# pushing to dockerhub
-          - uses: actions/checkout@v2
-            # with:
-            #   path: main
-          # - name: Run docker-compose stack
-          #   env: 
-          #       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          #   run: docker-compose -f docker-compose.yml up -d #docker build -t radicalsubject/twittergtfo:v0
-          # - name: Check folder
-          #   run: pwd
-          # - name: Check files
-          #   run: ls -ltr 
-          # - name: tag image
-          #   run: docker tag radicalsubject/twittergtfo:v0 radicalsubject/twittergtfo:v0  
-          # - name: docker login
-          #   run: docker login --username ${{ secrets.USERNAME }} --password ${{ secrets.PSSWRD }}
-          # - name: Upload to release to dockerhub
-          #   run: docker push radicalsubject/twittergtfo:v0 
 #adding ssh key  https://maxschmitt.me/posts/github-actions-ssh-key/
           - name: Add SSH key
             env:
@@ -61,23 +43,13 @@ jobs:
                 SSH_AUTH_SOCK: /tmp/ssh_agent_github.sock
                 BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
             run: |
+                git config --global user.email "actions@github.com"
+                git config --global user.name "GitHub actions" 
                 git remote add dokku dokku@178.176.224.186:bot
                 ssh root@178.176.224.186 "dokku config:set bot BOT_TOKEN=${{ secrets.BOT_TOKEN }}"
                 git fetch --unshallow origin
                 ssh root@178.176.224.186 "dokku git:initialize bot"
-                git push -u dokku main:main
-# # push to dokku 
-#           - name: Build and deploy
-#             env:
-#                 SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-#             run: |
-#                 git config --global user.email "actions@github.com"
-#                 git config --global user.name "GitHub actions" 
-#                 git remote add dokku dokku@178.176.224.186:bot
-#                 # git add dist --force
-#                 # git commit -m "Deploy"
-#                 git push dokku main:main -f
-# or you could do this 
+                git push -u dokku main:main -f
 # sending container via ssh to dokku
           - name: send container
             env:
@@ -89,13 +61,3 @@ jobs:
               docker save dokku/bot:latest | ssh root@178.176.224.186 "docker load"
               ssh root@178.176.224.186 "dokku tags:create bot previous; dokku tags:deploy bot latest"
 
-
-
-# # build the image
-# docker build -t dokku/test-app:v12 .
-# # copy the image to the dokku host
-# docker save dokku/test-app:v12 | bzip2 | ssh my.dokku.host "bunzip2 | docker load"
-# # tag and deploy the image
-# ssh my.dokku.host "dokku tags:create test-app previous; dokku tags:deploy test-app v12"
-# docker save radicalsubject/twittergtfo:v0 | ssh dokku@178.176.224.186 "docker load"
-#ssh my.dokku.host "dokku tags:create test-app previous; dokku tags:deploy test-app v12"
