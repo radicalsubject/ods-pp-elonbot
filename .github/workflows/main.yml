@@ -50,14 +50,14 @@ jobs:
                 git config --global user.name "GitHub actions" 
                 ssh root@178.176.224.186 "dokku git:initialize bot"
                 git push -u dokku main:main -f
-# sending container via ssh to dokku
-          - name: send container
-            env:
-                SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-                BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-            run: |
-              docker tag radicalsubject/twittergtfo:v0 dokku/bot:latest
-              ssh root@178.176.224.186 "dokku config:set bot BOT_TOKEN=${{ secrets.BOT_TOKEN }}"
-              docker save dokku/bot:latest | ssh root@178.176.224.186 "docker load"
-              ssh root@178.176.224.186 "dokku tags:create bot previous; dokku tags:deploy bot latest"
+# # sending container via ssh to dokku
+#           - name: send container
+#             env:
+#                 SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+#                 BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+#             run: |
+#               docker tag radicalsubject/twittergtfo:v0 dokku/bot:latest
+#               ssh root@178.176.224.186 "dokku config:set bot BOT_TOKEN=${{ secrets.BOT_TOKEN }}"
+#               docker save dokku/bot:latest | ssh root@178.176.224.186 "docker load"
+#               ssh root@178.176.224.186 "dokku tags:create bot previous; dokku tags:deploy bot latest"
 
