@@ -10,3 +10,5 @@ ADD . /app
 WORKDIR /app
 
 CMD python /app/bot.py
+
+# при деплое в докку не должно быть явно для приложения указано buildpack иначe dockerfile будет проигнорен
