@@ -35,8 +35,8 @@ def image_handler(update: Update, context: CallbackContext):
     file_ = bot.getFile(file_id)
     path = os.getcwd() + "/tmp/" + file_id + ".jpg"
     #create path if nessesary
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if not os.path.exists(os.getcwd() + "/tmp/"):
+        os.makedirs(os.getcwd() + "/tmp/")
     # now download files
     file_.download(path)
     blacklist = ["bitcoin", "elon", "musk", "crypto", "cryptocurrency", "btc", "eth"]
