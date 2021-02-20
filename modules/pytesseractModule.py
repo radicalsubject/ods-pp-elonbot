@@ -5,5 +5,5 @@ except ImportError:
 import pytesseract
 
 def read_image(image):
-    text = pytesseract.image_to_string(image)
+    text = pytesseract.image_to_string(Image.open(image))
     return text

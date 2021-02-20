@@ -1,5 +1,9 @@
 import torch
 from torchvision import transforms
+try:
+    from PIL import Image
+except ImportError:
+    import Image
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
@@ -11,7 +15,7 @@ def inspect(image):
         
     labels = ['trash','tweets']
 
-    img = image
+    img = Image.open(image)
 
     img_transforms = transforms.Compose([
             transforms.Resize(256),
