@@ -47,6 +47,6 @@ jobs:
                 # git config --global user.name "GitHub actions" 
                 git remote add dokku dokku@178.176.224.186:bot
                 ssh root@178.176.224.186 "dokku config:set bot BOT_TOKEN=${{ secrets.BOT_TOKEN }}"
-                # git fetch --unshallow origin
+                git fetch --unshallow origin
                 # ssh root@178.176.224.186 "dokku git:initialize bot"
                 git push -u dokku main:main
