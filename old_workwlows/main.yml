@@ -1,0 +1,104 @@
+name: Build and publish
+on:
+# Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+    build:
+        name: Build for ubuntu-latest
+        runs-on: ubuntu-latest
+        steps:
+# checkout is nessesary
+          - uses: actions/checkout@v2
+# pushing to dockerhub
+            # with:
+            #   path: main
+          # - name: Run docker-compose stack
+          #   env: 
+          #       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          #   run: docker-compose -f docker-compose.yml up -d #docker build -t radicalsubject/twittergtfo:v0
+          # - name: Check folder
+          #   run: pwd
+          # - name: Check files
+          #   run: ls -ltr 
+          # - name: tag image
+          #   run: docker tag radicalsubject/twittergtfo:v0 radicalsubject/twittergtfo:v0  
+          # - name: docker login
+          #   run: docker login --username ${{ secrets.USERNAME }} --password ${{ secrets.PSSWRD }}
+          # - name: Upload to release to dockerhub
+          #   run: docker push radicalsubject/twittergtfo:v0 
+#adding ssh key  https://maxschmitt.me/posts/github-actions-ssh-key/
+          - name: Add SSH key
+            env:
+                SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+            run: |
+                mkdir -p /home/runner/.ssh
+                # Replace example.com with the hostname of the machine
+                # you're SSH-ing into
+                ssh-keyscan 178.176.224.186 >> /home/runner/.ssh/known_hosts
+                # DOKKU_SSH_KEY is the name of the repository secret
+                echo "${{ secrets.DOKKU_SSH_KEY }}" > /home/runner/.ssh/github_actions
+                chmod 600 /home/runner/.ssh/github_actions
+                ssh-agent -a $SSH_AUTH_SOCK > /dev/null 
+                ssh-add /home/runner/.ssh/github_actions
+# pushing directly to dokku
+          # - uses: actions/checkout@v1
+          - name: Setup SSH Keys and known_hosts
+            env:
+                SSH_AUTH_SOCK: /tmp/ssh_agent_github.sock
+            run: |
+                mkdir -p ~/.ssh
+                ssh-keyscan github.com >> ~/.ssh/known_hosts
+                ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+                ssh-add - <<< "${{ secrets.DOKKU_SSH_KEY }}"
+          - name: git-remote-add and push
+            env:
+                SSH_AUTH_SOCK: /tmp/ssh_agent_github.sock
+                BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+            run: |
+                # git config --global user.email "actions@github.com"
+                # git config --global user.name "GitHub actions" 
+                git remote add dokku dokku@178.176.224.186:bot
+                ssh root@178.176.224.186 "dokku config:set bot BOT_TOKEN=${{ secrets.BOT_TOKEN }}"
+                git fetch --unshallow origin
+                ssh root@178.176.224.186 "dokku git:initialize bot"
+                git push -u dokku main:main -f
+# # push to dokku 
+#           - name: Build and deploy
+#             env:
+#                 SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+#             run: |
+#                 git config --global user.email "actions@github.com"
+#                 git config --global user.name "GitHub actions" 
+#                 git remote add dokku dokku@178.176.224.186:bot
+#                 # git add dist --force
+#                 # git commit -m "Deploy"
+#                 git push dokku main:main -f
+# # or you could do this 
+# # sending container via ssh to dokku
+#           - name: send container
+#             env:
+#                 SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+#                 BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+#             run: |
+#               docker tag radicalsubject/twittergtfo:v0 dokku/bot:latest
+#               ssh root@178.176.224.186 "dokku config:set bot BOT_TOKEN=${{ secrets.BOT_TOKEN }}"
+#               docker save dokku/bot:latest | ssh root@178.176.224.186 "docker load"
+#               ssh root@178.176.224.186 "dokku tags:create bot previous; dokku tags:deploy bot latest"
+
+
+
+# # build the image
+# docker build -t dokku/test-app:v12 .
+# # copy the image to the dokku host
+# docker save dokku/test-app:v12 | bzip2 | ssh my.dokku.host "bunzip2 | docker load"
+# # tag and deploy the image
+# ssh my.dokku.host "dokku tags:create test-app previous; dokku tags:deploy test-app v12"
+# docker save radicalsubject/twittergtfo:v0 | ssh dokku@178.176.224.186 "docker load"
+#ssh my.dokku.host "dokku tags:create test-app previous; dokku tags:deploy test-app v12"

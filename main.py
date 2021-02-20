@@ -31,10 +31,10 @@ def main():
 
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", handlers.start))
-    # dispatcher.add_handler(CommandHandler("help", handlers.help_command))
-    # dispatcher.add_handler(CommandHandler("test", handlers.test))
+    dispatcher.add_handler(CommandHandler("help", handlers.help_command))
+    dispatcher.add_handler(CommandHandler("test", handlers.test))
 
-    # updater.dispatcher.add_handler(MessageHandler(Filters.photo, handlers.image_handler))
+    updater.dispatcher.add_handler(MessageHandler(Filters.photo, handlers.image_handler))
 
     # Start the Bot
     updater.start_polling()
