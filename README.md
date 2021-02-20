@@ -20,4 +20,4 @@ dokku apps:create bot
 when project is pushed in main, CI triggers pushing project to Dokku host 
 if buildpack is not specified, then Dockerfile is used to build an image
 
-question to solve - how to stop previous dokku app when pushing new? i suspect dokku doesnt do that automatically.
+question to solve - how to stop previous dokku app when pushing new? i suspect dokku doesnt do that automatically. i guess this is a feature managed in restarting policies. the previous container is up for ~1 minute ususally.
