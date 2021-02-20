@@ -131,3 +131,6 @@ dmypy.json
 .DS_Store
 
 *.secret
+id_rsa
+id_rsa.pub
+secrets/
